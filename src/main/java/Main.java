@@ -44,6 +44,25 @@ public class Main {
         }
 
         writer.write(mul.toString() + "\n" + (double) (System.currentTimeMillis() - time) / 1000);
+        writer.newLine();
+        reader.close();
+
+        // Sequential execution
+
+        reader = new BufferedReader(new FileReader("in1.txt"));
+        service = Executors.newSingleThreadExecutor();
+
+        time = System.currentTimeMillis();
+
+        data = reader.lines().map(line -> line.split("\t")).collect(Collectors.toList());
+        Future<BigInteger> future = service.submit(new Multiply(data));
+        try {
+            writer.write(future.get().toString() + "\n" + (double) (System.currentTimeMillis() - time) / 1000);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        } finally {
+            service.shutdown();
+        }
 
         try {
             reader.close();
